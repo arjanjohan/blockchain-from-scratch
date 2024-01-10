@@ -61,16 +61,21 @@ impl StateMachine for Atm {
         let mut state = starting_state.clone();
         match t {
             Action::SwipeCard(pin_hash) => state.expected_pin_hash = Auth::Authenticating(*pin_hash),
-            Action::PressKey(key) => match key {
-                Key::Enter => {
-                    let typed_pin = 
+            Action::PressKey(key) => if state.expected_pin_hash != Auth::Waiting {match key {
+                    Key::Enter => {
+                        // match state.expected_pin_hash {
+                        //     Auth::Authenticated => {},
+                        //     _ => {}
+                        // }
+                        // let typed_pin = 
 
 
-                    state.expected_pin_hash = Auth::Waiting;
-                    state.keystroke_register = Vec::new();
-                },
-                _ => state.keystroke_register.push(key.clone()) 
-            },
+                        state.expected_pin_hash = Auth::Waiting;
+                        state.keystroke_register = Vec::new();
+                    },
+                    _ => state.keystroke_register.push(key.clone()) 
+                }
+            }
         }
         state
     }
