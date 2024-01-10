@@ -40,7 +40,40 @@ impl StateMachine for ClothesMachine {
     type Transition = ClothesAction;
 
     fn next_state(starting_state: &ClothesState, t: &ClothesAction) -> ClothesState {
-        todo!("Exercise 3")
+        // match starting_state {
+        //     ClothesState::Clean(x) => true,
+        //     ClothesState::Dirty(x) => true,
+        //     ClothesState::Wet(x) => true,
+        //     ClothesState::Tattered => false,
+        // }
+
+        match t {
+            ClothesAction::Wear => 
+                match starting_state {
+                    ClothesState::Clean(x) => if (x > &1) {ClothesState::Dirty(x-1)} else {ClothesState::Tattered},
+                    ClothesState::Dirty(x) => if (x > &1) {ClothesState::Dirty(x-1)} else {ClothesState::Tattered},
+                    ClothesState::Wet(x) => if (x > &1) {ClothesState::Dirty(x-1)} else {ClothesState::Tattered},
+                    ClothesState::Tattered => ClothesState::Tattered,
+                }
+            ,
+            ClothesAction::Wash => 
+                match starting_state {
+                    ClothesState::Clean(x) => if (x > &1) {ClothesState::Wet(x-1)} else {ClothesState::Tattered},
+                    ClothesState::Dirty(x) => if (x > &1) {ClothesState::Wet(x-1)} else {ClothesState::Tattered},
+                    ClothesState::Wet(x) => if (x > &1) {ClothesState::Wet(x-1)} else {ClothesState::Tattered},
+                    ClothesState::Tattered => ClothesState::Tattered,
+                }
+            ,ClothesAction::Dry => 
+                match starting_state {
+                    ClothesState::Wet(x) => if (x > &1) {ClothesState::Clean(x-1)} else {ClothesState::Tattered},
+                    ClothesState::Clean(x) => if (x > &1) {ClothesState::Clean(x-1)} else {ClothesState::Tattered},
+                    ClothesState::Dirty(x) => if (x > &1) {ClothesState::Dirty(x-1)} else {ClothesState::Tattered},
+                    ClothesState::Tattered => ClothesState::Tattered,
+                }
+    ,
+        }
+
+
     }
 }
 

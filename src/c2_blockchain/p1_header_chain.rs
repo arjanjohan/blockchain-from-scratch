@@ -50,17 +50,35 @@ impl Header {
     /// This method may assume that the block on which it is called is valid, but it
     /// must verify all of the blocks in the slice;
     fn verify_sub_chain(&self, chain: &[Header]) -> bool {
-        
-        let mut iter = chain.iter();
-        let mut last = iter.next().unwrap(); 
-
-        while let Some(item) = iter.next() {
-            if (last.child() == *item) {
-                return false;
-            };
-            last = iter.next().unwrap(); 
+        if chain.len() != 0 {
+            
+            println!("chain = {:?}", chain);
+            let mut last = chain.first().unwrap();
+            for i in 1..chain.len() {
+                println!("i = {:?}", i);
+                let item = chain.get(i).unwrap();
+                if last.parent != hash(item) {
+                    return false
+                };
+                last = item;
+            }
         }
         true
+
+        // println!("chain = {:?}", chain);
+        // println!("chain len = {:?}", chain.len());
+        // let mut iter = chain.iter();
+        // let mut last = iter.next().unwrap(); 
+
+        // println!("last = {:?}", last);
+
+        // while let Some(item) = iter.next() {
+        //     println!(" next = {:?}", chain);
+        //     if last.child() == item {
+        //         return false;
+        //     };
+        //     last = iter.next().unwrap(); 
+        // }
     }
 }
 
@@ -68,11 +86,16 @@ impl Header {
 
 /// Build and return a valid chain with exactly five blocks including the genesis block.
 fn build_valid_chain_length_5() -> Vec<Header> {
-    let mut chain = Header::genesis();
+    let mut chain = Vec::new();
+    // let mut block = Header::genesis();
+    chain.push(Header::genesis());
     for i in 0..4 {
-        chain = chain.child();
+        let block = chain.get(i).unwrap().child();
+        // println!("{:?}", block);
+        chain.push(block);
     }
     chain
+    // todo!()
 }
 
 /// Build and return a chain with at least three headers.
