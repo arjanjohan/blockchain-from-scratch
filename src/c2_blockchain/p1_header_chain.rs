@@ -37,7 +37,7 @@ impl Header {
     /// Create and return a valid child header.
     fn child(&self) -> Self {
         Header {
-            parent: hash(&Header::genesis()),
+            parent: hash(&self),
             height: self.height + 1,
             extrinsics_root: (),
             state_root: (),
@@ -50,35 +50,17 @@ impl Header {
     /// This method may assume that the block on which it is called is valid, but it
     /// must verify all of the blocks in the slice;
     fn verify_sub_chain(&self, chain: &[Header]) -> bool {
-        if chain.len() != 0 {
+        if chain.len() > 1 {
+            let mut height = chain.get(0).unwrap().height;
             
-            println!("chain = {:?}", chain);
-            let mut last = chain.first().unwrap();
             for i in 1..chain.len() {
-                println!("i = {:?}", i);
-                let item = chain.get(i).unwrap();
-                if last.parent != hash(item) {
-                    return false
-                };
-                last = item;
+                if chain.get(i).unwrap().parent != hash(chain.get(i-1).unwrap()) {
+                    return false;
+                }
             }
+            return true;
         }
-        true
-
-        // println!("chain = {:?}", chain);
-        // println!("chain len = {:?}", chain.len());
-        // let mut iter = chain.iter();
-        // let mut last = iter.next().unwrap(); 
-
-        // println!("last = {:?}", last);
-
-        // while let Some(item) = iter.next() {
-        //     println!(" next = {:?}", chain);
-        //     if last.child() == item {
-        //         return false;
-        //     };
-        //     last = iter.next().unwrap(); 
-        // }
+        return chain.len() == 0 || chain.get(0).unwrap().height == 0
     }
 }
 
@@ -102,7 +84,17 @@ fn build_valid_chain_length_5() -> Vec<Header> {
 /// The chain should start with a proper genesis header,
 /// but the entire chain should NOT be valid.
 fn build_an_invalid_chain() -> Vec<Header> {
-    todo!("Exercise 5")
+    let mut chain = Vec::new();
+    // let mut block = Header::genesis();
+    let genesis = Header::genesis();
+    chain.push(genesis.clone());
+    for i in 0..4 {
+        // let block = chain.get(i).unwrap().child();
+        // println!("{:?}", block);
+        chain.push(genesis.clone());
+    }
+    chain
+    
 }
 
 // To run these tests: `cargo test bc_1

@@ -31,12 +31,24 @@ pub struct Header {
 impl Header {
     /// Returns a new valid genesis header.
     fn genesis() -> Self {
-        todo!("Exercise 1")
+        Header {
+            parent: 0u64,
+            height: 0u64,
+            extrinsic: 0u64,
+            state: 0u64,
+            consensus_digest: (),
+        }
     }
 
     /// Create and return a valid child header.
     fn child(&self, extrinsic: u64) -> Self {
-        todo!("Exercise 2")
+        Header {
+            parent: hash(&self),
+            height: self.height + 1,
+            extrinsic: extrinsic,
+            state: self.state + extrinsic,
+            consensus_digest: (),
+        }
     }
 
     /// Verify that all the given headers form a valid chain from this header to the tip.
@@ -48,7 +60,17 @@ impl Header {
     /// So in order for a block to verify, we must have that relationship between the extrinsic,
     /// the previous state, and the current state.
     fn verify_sub_chain(&self, chain: &[Header]) -> bool {
-        todo!("Exercise 3")
+        if chain.len() > 1 {
+            let mut height = chain.get(0).unwrap().height;
+            
+            for i in 1..chain.len() {
+                if chain.get(i).unwrap().parent != hash(chain.get(i-1).unwrap()) {
+                    return false;
+                }
+            }
+            return true;
+        }
+        return chain.len() == 0 || chain.get(0).unwrap().height == 0
     }
 }
 
